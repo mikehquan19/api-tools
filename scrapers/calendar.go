@@ -68,28 +68,26 @@ func ScrapeCalendar(outDir string) {
 			// Parse location
 			location := strings.Trim(fmt.Sprintf("%s, %s", toString(rawEvent.Event["location_name"]), toString(rawEvent.Event["room_number"])), " ,")
 
-			// Parse the event types, event topic, and event target audience
+			// Parse the event types, event target audience, and event topic
 			filters := toMap(rawEvent.Event["filters"])
 			eventTypes := []string{}
-			eventTopics := []string{}
 			targetAudiences := []string{}
+			eventTopics := []string{}
 
 			rawTypes := toSlice(filters["event_types"])
 			for _, rawType := range rawTypes {
 				eventTypes = append(eventTypes, toString(toMap(rawType)["name"]))
 			}
-
 			rawAudiences := toSlice(filters["event_target_audience"])
 			for _, audience := range rawAudiences {
 				targetAudiences = append(targetAudiences, toString(toMap(audience)["name"]))
 			}
-
 			rawTopics := toSlice(filters["event_topic"])
 			for _, topic := range rawTopics {
 				eventTopics = append(eventTopics, toString(toMap(topic)["name"]))
 			}
 
-			// Parse the event departments, and tags
+			// Parse the tags, and event departments
 			departments := []string{}
 			tags := []string{}
 
@@ -97,13 +95,12 @@ func ScrapeCalendar(outDir string) {
 			for _, tag := range rawTags {
 				tags = append(tags, tag.(string))
 			}
-
 			rawDeparments := toSlice(rawEvent.Event["departments"])
 			for _, deparment := range rawDeparments {
 				departments = append(departments, toMap(deparment)["name"].(string))
 			}
 
-			// Parse the contact info, =ote that some events won't have contact phone number
+			// Parse the contact info, note that some events won't have contact phone number
 			rawContactInfo := toMap(rawEvent.Event["custom_fields"])
 			contactInfo := [3]string{}
 			for i, infoField := range []string{
